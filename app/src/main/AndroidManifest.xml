@@ -20,7 +20,7 @@
         android:theme="@style/Theme.RunningTrack"
         tools:targetApi="31">
         <activity
-            android:name=".core.presentation.MainActivity"
+            android:name=".core.presentation.activity.MainActivity"
             android:launchMode="singleTask"
             android:exported="true">
             <intent-filter>
