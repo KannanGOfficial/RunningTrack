@@ -9,7 +9,7 @@ data class RunEntity(
 
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = RunTable.Column.ID)
-    val id : Int,
+    val id : String,
 
     @ColumnInfo(name = RunTable.Column.IMAGE_IN_BYTE_ARRAY)
     val imageInByteArray : ByteArray,
@@ -42,17 +42,19 @@ data class RunEntity(
         if (avgSpeedInKMPH != other.avgSpeedInKMPH) return false
         if (distanceInMeters != other.distanceInMeters) return false
         if (runningTimeInMillis != other.runningTimeInMillis) return false
+        if (caloriesBurned != other.caloriesBurned) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id
+        var result = id.hashCode()
         result = 31 * result + imageInByteArray.contentHashCode()
         result = 31 * result + timeStamp.hashCode()
         result = 31 * result + avgSpeedInKMPH.hashCode()
         result = 31 * result + distanceInMeters
         result = 31 * result + runningTimeInMillis.hashCode()
+        result = 31 * result + caloriesBurned
         return result
     }
 }
