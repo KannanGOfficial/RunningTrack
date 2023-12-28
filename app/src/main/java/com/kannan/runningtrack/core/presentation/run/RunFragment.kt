@@ -1,16 +1,16 @@
-package com.kannan.runningtrack.core.presentation.fragments
+package com.kannan.runningtrack.core.presentation.run
 
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.kannan.runningtrack.R
-import com.kannan.runningtrack.databinding.FragmentSettingsBinding
+import com.kannan.runningtrack.databinding.FragmentRunBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SettingsFragment : Fragment(R.layout.fragment_settings) {
+class RunFragment : Fragment(R.layout.fragment_run) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentSettingsBinding.bind(view)
+        val binding = FragmentRunBinding.bind(view)
     }
 }
