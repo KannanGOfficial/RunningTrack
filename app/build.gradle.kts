@@ -4,7 +4,7 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -83,5 +83,9 @@ dependencies {
 
     //Timber
     implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // Maps SDK for Android
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
 }
