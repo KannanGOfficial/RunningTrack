@@ -5,9 +5,9 @@ import com.kannan.runningtrack.core.data.source.local.entity.RunEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class RunDataSourceImpl @Inject constructor(
+class RunLocalDataSourceImpl @Inject constructor(
     private val appDB : AppDB
-) : RunDataSource {
+) : RunLocalDataSource {
     override suspend fun insertRun(runEntity: RunEntity) =
         appDB.runDao.insertRun(runEntity)
 

@@ -1,6 +1,6 @@
 package com.kannan.runningtrack.core.data.repository
 
-import com.kannan.runningtrack.core.data.source.local.datasource.RunDataSource
+import com.kannan.runningtrack.core.data.source.local.datasource.RunLocalDataSource
 import com.kannan.runningtrack.core.data.source.local.entity.RunEntity
 import com.kannan.runningtrack.core.data.source.local.mappers.toRun
 import com.kannan.runningtrack.core.domain.mappers.toEntity
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class RunRepositoryImpl @Inject constructor(
-    private val localDataSource: RunDataSource
+    private val localDataSource: RunLocalDataSource
 ) : RunRepository {
     override suspend fun insertRun(run: Run) =
         localDataSource.insertRun(run.toEntity())

@@ -3,7 +3,7 @@ package com.kannan.runningtrack.core.data.source.local.datasource
 import com.kannan.runningtrack.core.data.source.local.entity.RunEntity
 import kotlinx.coroutines.flow.Flow
 
-interface RunDataSource {
+interface RunLocalDataSource {
     suspend fun insertRun(runEntity: RunEntity)
     suspend fun deleteRun(runEntity: RunEntity)
     fun getAllRunSortedByDate() : Flow<RunEntity>
