@@ -1,4 +1,4 @@
-package com.kannan.runningtrack
+package com.kannan.runningtrack.core.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
