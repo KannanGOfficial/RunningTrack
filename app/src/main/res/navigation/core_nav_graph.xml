@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/core_nav_graph"
+    app:startDestination="@id/runFragment">
+
+    <fragment
+        android:id="@+id/runFragment"
+        android:name="com.kannan.runningtrack.core.presentation.run.RunFragment"
+        android:label="RunFragment"
+        tools:layout="@layout/fragment_run"/>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.kannan.runningtrack.core.presentation.settings.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings"/>
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="com.kannan.runningtrack.core.presentation.setup.SetupFragment"
+        android:label="SetupFragment"
+        tools:layout="@layout/fragment_setup"/>
+    <fragment
+        android:id="@+id/statisticFragment"
+        android:name="com.kannan.runningtrack.core.presentation.statistic.StatisticFragment"
+        android:label="StatisticFragment"
+        tools:layout="@layout/fragment_statistic"/>
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.kannan.runningtrack.core.presentation.tracking.TrackingFragment"
+        android:label="TrackingFragment"
+        tools:layout="@layout/fragment_tracking"/>
+</navigation>
