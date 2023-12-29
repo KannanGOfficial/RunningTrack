@@ -53,6 +53,9 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    //LifeCycle Service
+    implementation("androidx.lifecycle:lifecycle-service:2.6.2")
+
     //Intuit
     implementation("com.intuit.sdp:sdp-android:1.1.0")
 
