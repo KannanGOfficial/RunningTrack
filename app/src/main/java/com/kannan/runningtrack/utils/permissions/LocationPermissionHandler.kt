@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import timber.log.Timber
 
-class CoarseFineAndBackgroundLocationHandler(
+class LocationPermissionHandler(
     fragment: Fragment,
     permissionResult: (PermissionResult) -> Unit,
     private val context: Context
@@ -12,23 +12,16 @@ class CoarseFineAndBackgroundLocationHandler(
 
 
     override val permissionList: List<AppPermission> =
-        if (isAndroid29OrAbove())
             listOf(
-                AppPermission.BACKGROUND_LOCATION,
-                AppPermission.FINE_LOCATION,
-                AppPermission.COARSE_LOCATION
-            )
-        else
-            listOf(
-                AppPermission.FINE_LOCATION,
-                AppPermission.COARSE_LOCATION
+                AppPermission.COARSE_LOCATION,
+                AppPermission.FINE_LOCATION
             )
 
     override fun showRationalDialog() {
-        Timber.d("Rational Dialog is shown")
+        Timber.d("LocationPermission : Rational Dialog is shown")
     }
 
     override fun showPermanentlyDeniedDialog() {
-        Timber.d("Permanent Dialog is shown")
+        Timber.d(" LocationPermission : Permanent Dialog is shown")
     }
 }
