@@ -1,4 +1,4 @@
-package com.kannan.runningtrack.utils.permissions
+package com.kannan.runningtrack.utils
 
 import android.os.Build
 

@@ -88,4 +88,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
 
+    //MP Chart
+//    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
 }
