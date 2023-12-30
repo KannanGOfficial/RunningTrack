@@ -10,4 +10,10 @@
         <item>Average Speed</item>
         <item>Calories Burned</item>
     </string-array>
+
+    <!-- Notification based -->
+    <string name="tracking_notification_channel_id">tracking_notification</string>
+    <string name="title_tracking_notification">Tracking Notification</string>
+    <string name="desc_tracking_notification">Running Tracking…</string>
+    <string name="tracking_notification_content_title">"Track your run"</string>
 </resources>
