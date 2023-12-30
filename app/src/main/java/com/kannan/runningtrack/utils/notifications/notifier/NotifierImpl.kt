@@ -1,11 +1,11 @@
-package com.kannan.runningtrack.utils.notifications.service
+package com.kannan.runningtrack.utils.notifications.notifier
 
 import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
 
 
-abstract class Notifier(context : Context) {
+abstract class NotifierImpl(context : Context) : Notifier{
 
     abstract val notification : NotificationCompat.Builder
 
@@ -14,7 +14,14 @@ abstract class Notifier(context : Context) {
     private val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    fun showNotification(){
+    override fun postNotification(){
         notificationManager.notify(notificationId,notification.build())
+    }
+
+    override fun postNotification(contextText: String) {
+        notificationManager.notify(
+            notificationId,
+            notification.setContentText(contextText).build()
+        )
     }
 }

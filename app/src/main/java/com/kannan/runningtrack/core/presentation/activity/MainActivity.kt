@@ -1,5 +1,6 @@
 package com.kannan.runningtrack.core.presentation.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -39,5 +40,10 @@ class MainActivity : AppCompatActivity() {
                 else -> View.GONE
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
     }
 }
