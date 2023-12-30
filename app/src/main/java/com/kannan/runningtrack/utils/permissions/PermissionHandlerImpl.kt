@@ -1,11 +1,10 @@
 package com.kannan.runningtrack.utils.permissions
 
 import android.content.Context
-import android.content.pm.PackageManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.kannan.runningtrack.utils.extensions.checkHasPermission
 
 abstract class PermissionHandlerImpl(
     private val fragment: Fragment,
@@ -57,7 +56,7 @@ abstract class PermissionHandlerImpl(
 
     private fun checkAlreadyHasPermission () =
         permissionList.all { permission ->
-            ActivityCompat.checkSelfPermission(context, permission.value) == PackageManager.PERMISSION_GRANTED
+            context.checkHasPermission(permission)
         }
 
 }
