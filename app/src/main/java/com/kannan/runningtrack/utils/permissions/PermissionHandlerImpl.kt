@@ -35,6 +35,8 @@ abstract class PermissionHandlerImpl(
 
     abstract val permissionList: List<AppPermission>
 
+    abstract val timberTag : String
+
     abstract fun showRationalDialog()
 
     abstract fun showPermanentlyDeniedDialog()

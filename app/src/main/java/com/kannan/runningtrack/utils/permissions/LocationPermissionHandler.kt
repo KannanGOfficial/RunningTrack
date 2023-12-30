@@ -10,6 +10,8 @@ class LocationPermissionHandler(
     private val context: Context
 ) : PermissionHandlerImpl(fragment, context, permissionResult) {
 
+    override val timberTag: String =
+        LocationPermissionHandler::class.java.simpleName
 
     override val permissionList: List<AppPermission> =
             listOf(
@@ -18,10 +20,10 @@ class LocationPermissionHandler(
             )
 
     override fun showRationalDialog() {
-        Timber.d("LocationPermission : Rational Dialog is shown")
+        Timber.tag(timberTag).d("Rational Dialog is shown")
     }
 
     override fun showPermanentlyDeniedDialog() {
-        Timber.d(" LocationPermission : Permanent Dialog is shown")
+        Timber.tag(timberTag).d("Permanent Dialog is shown")
     }
 }
