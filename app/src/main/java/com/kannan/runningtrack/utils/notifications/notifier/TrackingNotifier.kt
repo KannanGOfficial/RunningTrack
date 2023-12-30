@@ -8,12 +8,13 @@ import com.kannan.runningtrack.R
 import com.kannan.runningtrack.core.presentation.activity.MainActivity
 import com.kannan.runningtrack.utils.notifications.channel.NotificationChannels
 
-class TrackingNotifier(private val context : Context): NotifierImpl(context) {
+class TrackingNotifier(private val context : Context): Notifier(context) {
 
     override val notificationId: Int = NotificationChannels.TRACKING_NOTIFICATION_CHANNEL.channelId
 
-    override val notification: NotificationCompat.Builder =
+    override val notificationBuilder: NotificationCompat.Builder =
         NotificationCompat.Builder(context, NotificationChannels.TRACKING_NOTIFICATION_CHANNEL.getChannelId(context))
+            .setAutoCancel(false)
             .setOngoing(true)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
