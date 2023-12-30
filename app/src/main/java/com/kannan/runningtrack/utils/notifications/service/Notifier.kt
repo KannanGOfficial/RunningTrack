@@ -5,7 +5,7 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 
 
-abstract class NotificationService(context : Context) {
+abstract class Notifier(context : Context) {
 
     abstract val notification : NotificationCompat.Builder
 

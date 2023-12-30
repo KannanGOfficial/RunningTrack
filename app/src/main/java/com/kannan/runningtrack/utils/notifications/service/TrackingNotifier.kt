@@ -6,7 +6,7 @@ import androidx.core.app.NotificationCompat
 import com.kannan.runningtrack.R
 import com.kannan.runningtrack.utils.notifications.channel.NotificationChannels
 
-class TrackingNotificationService(context : Context): NotificationService(context) {
+class TrackingNotifier(context : Context): Notifier(context) {
 
     override val notificationId: Int = NotificationChannels.TRACKING_NOTIFICATION_CHANNEL.channelId
 
