@@ -13,10 +13,12 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
-import com.kannan.runningtrack.utils.extensions.checkHasPermission
+import com.kannan.runningtrack.utils.extensions.checkHasLocationPermission
+import com.kannan.runningtrack.utils.location.LocationTracker
+import com.kannan.runningtrack.utils.location.LocationTrackerResult
+import com.kannan.runningtrack.utils.location.RunningTrackLocationTracker
 import com.kannan.runningtrack.utils.notifications.notifier.Notifier
 import com.kannan.runningtrack.utils.notifications.notifier.TrackingNotifier
-import com.kannan.runningtrack.utils.permissions.AppPermission
 import timber.log.Timber
 
 typealias PolyLine = MutableList<LatLng>
@@ -30,10 +32,26 @@ class TrackingService : LifecycleService() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
+    private val locationTracker : LocationTracker by lazy { RunningTrackLocationTracker(this, ::locationTrackingResult) }
+
+    private fun locationTrackingResult(locationTrackerResult: LocationTrackerResult){
+        when(locationTrackerResult){
+            is LocationTrackerResult.Error -> Timber.tag(tag).d(locationTrackerResult.error)
+            is LocationTrackerResult.Success -> {
+                if(isTracking.value!!){
+                    for(location in locationTrackerResult.result.locations) {
+                        addPolyLines(location)
+                        Timber.tag(tag).d("New Location ${location.latitude} , ${location.longitude}")
+                    }
+                }
+            }
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         postInitialValues()
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         isTracking.observe(this){
             updateLocationTracking(it)
         }
@@ -110,7 +128,7 @@ class TrackingService : LifecycleService() {
 
     private fun updateLocationTracking(isTracking : Boolean){
         if(isTracking){
-           if(checkHasPermission(AppPermission.COARSE_LOCATION)){
+          /* if(checkHasLocationPermission()){
               val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,5000L).apply {
                   setMinUpdateIntervalMillis(2000L)
                   setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
@@ -122,7 +140,9 @@ class TrackingService : LifecycleService() {
                    locationCallback,
                    Looper.getMainLooper()
                )
-           }
+           }*/
+
+            locationTracker.startLocationTracking()
         }
     }
 }
