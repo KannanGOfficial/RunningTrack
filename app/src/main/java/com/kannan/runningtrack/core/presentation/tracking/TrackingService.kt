@@ -19,6 +19,13 @@ import com.kannan.runningtrack.utils.location.LocationTrackerResult
 import com.kannan.runningtrack.utils.location.RunningTrackLocationTracker
 import com.kannan.runningtrack.utils.notifications.notifier.Notifier
 import com.kannan.runningtrack.utils.notifications.notifier.TrackingNotifier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 typealias PolyLine = MutableList<LatLng>
@@ -32,6 +39,7 @@ class TrackingService : LifecycleService() {
 
     private val locationTracker : LocationTracker by lazy { RunningTrackLocationTracker(this, ::locationTrackingResult) }
 
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onCreate() {
         super.onCreate()
@@ -100,8 +108,19 @@ class TrackingService : LifecycleService() {
 
     private fun updateLocationTracking(isTracking : Boolean){
         if(isTracking){
-            locationTracker.startLocationTracking()
+//            locationTracker.startLocationTracking()
+            locationTracker.getLocationUpdates()
+                .catch { e -> }
+                .onEach {location ->
+                    addPolyLines(location)
+                    Timber.tag(tag).d("updateLocationTracking inside Flow called...")
+                }.launchIn(serviceScope)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
     }
     private fun locationTrackingResult(locationTrackerResult: LocationTrackerResult){
         when(locationTrackerResult){

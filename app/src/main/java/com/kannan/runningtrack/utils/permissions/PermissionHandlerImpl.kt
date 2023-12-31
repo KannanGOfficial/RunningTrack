@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import com.kannan.runningtrack.utils.extensions.checkHasPermission
 
 abstract class PermissionHandlerImpl(
