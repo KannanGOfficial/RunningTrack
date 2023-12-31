@@ -19,12 +19,12 @@ import com.kannan.runningtrack.utils.notifications.notifier.TrackingNotifier
 import com.kannan.runningtrack.utils.permissions.AppPermission
 import timber.log.Timber
 
-typealias polyLine = MutableList<LatLng>
-typealias polyLines = MutableList<polyLine>
+typealias PolyLine = MutableList<LatLng>
+typealias PolyLines = MutableList<PolyLine>
 
 class TrackingService : LifecycleService() {
 
-    var isFirstRun = true
+    private var isFirstRun = true
 
     private val tag = TrackingService::class.java.simpleName
 
@@ -41,7 +41,7 @@ class TrackingService : LifecycleService() {
 
     companion object {
         val isTracking = MutableLiveData<Boolean>()
-        val pathPoints = MutableLiveData<polyLines>()
+        val pathPoints = MutableLiveData<PolyLines>()
     }
 
     private fun postInitialValues(){
@@ -72,14 +72,23 @@ class TrackingService : LifecycleService() {
                     if(isFirstRun){
                         startForegroundService()
                         isFirstRun = false
-                    }else
+                    }else {
                         Timber.tag(tag).d("Service is Resumed...")
+                        startForegroundService()
+                    }
                 }
-                TrackingServiceAction.PAUSE_SERVICE.name -> Timber.tag(tag).d("PAUSE_SERVICE")
-                TrackingServiceAction.RESUME_SERVICE.name -> Timber.tag(tag).d("RESUME_SERVICE")
+                TrackingServiceAction.PAUSE_SERVICE.name -> {
+                    Timber.tag(tag).d("PAUSE_SERVICE")
+                    pauseService()
+                }
+                TrackingServiceAction.STOP_SERVICE.name -> Timber.tag(tag).d("RESUME_SERVICE")
             }
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun pauseService(){
+        isTracking.postValue(false)
     }
 
     private val locationCallback = object :LocationCallback(){

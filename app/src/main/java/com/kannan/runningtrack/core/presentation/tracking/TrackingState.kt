@@ -3,7 +3,7 @@ package com.kannan.runningtrack.core.presentation.tracking
 enum class TrackingServiceAction{
     START_OR_RESUME_SERVICE,
     PAUSE_SERVICE,
-    RESUME_SERVICE
+    STOP_SERVICE
 }
 
 sealed interface TrackingUiAction{

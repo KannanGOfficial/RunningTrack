@@ -1,25 +1,36 @@
 package com.kannan.runningtrack.core.presentation.tracking
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.PolylineOptions
 import com.kannan.runningtrack.R
 import com.kannan.runningtrack.databinding.FragmentTrackingBinding
+import com.kannan.runningtrack.utils.extensions.makeGone
+import com.kannan.runningtrack.utils.extensions.makeVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 @AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private lateinit var binding: FragmentTrackingBinding
     private var map: GoogleMap? = null
+
+    private var isTracking : Boolean = false
+    private var pathPoints =  mutableListOf<PolyLine>()
+
+    private val timberTag = TrackingFragment::class.java.simpleName
 
     private val viewModel : TrackingViewModel by viewModels()
 
@@ -32,7 +43,10 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
         binding.mapView.getMapAsync {
             map = it
+            addAllPolyLine()
         }
+
+        subscribeObservers()
 
         binding.bindState(
             uiEvent = viewModel.uiEvent,
@@ -40,6 +54,63 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         )
     }
 
+    fun subscribeObservers(){
+        TrackingService.isTracking.observe(viewLifecycleOwner){
+           updateTracking(it)
+        }
+
+        TrackingService.pathPoints.observe(viewLifecycleOwner){
+            pathPoints = it
+            addLatestPolyLine()
+            moveCameraToUser()
+        }
+    }
+
+    private fun updateTracking(isTracking : Boolean){
+        this.isTracking = isTracking
+        if(isTracking){
+            binding.btnToggleRun.text = "Stop"
+            binding.btnFinishRun.makeGone()
+        }else{
+            binding.btnToggleRun.text ="Start"
+            binding.btnFinishRun.makeVisible()
+        }
+    }
+
+    private fun addLatestPolyLine(){
+        if(pathPoints.isNotEmpty() && pathPoints.last().size > 1){
+            val preLastLatLng = pathPoints.last()[pathPoints.last().size - 2]
+            val lastLng = pathPoints.last().last()
+            val polyLineOptions = PolylineOptions()
+                .color(Color.RED)
+                .add(preLastLatLng)
+                .add(lastLng)
+
+            Timber.tag(timberTag).d("addLatestPolyLine $preLastLatLng , $lastLng")
+            map?.addPolyline(polyLineOptions)
+        }
+    }
+
+    private fun addAllPolyLine(){
+        for(polyLine in pathPoints){
+            val polyLineOptions = PolylineOptions()
+                .color(Color.RED)
+                .width(8f)
+                .addAll(polyLine)
+            map?.addPolyline(polyLineOptions)
+        }
+    }
+
+    private fun moveCameraToUser(){
+        if(pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()){
+            map?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    pathPoints.last().last(),
+                    100f
+                )
+            )
+        }
+    }
     private fun FragmentTrackingBinding.bindState(
         uiEvent : SharedFlow<TrackingUiEvent>,
         uiAction : ((TrackingUiAction) -> Unit)
@@ -58,7 +129,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         uiAction: (TrackingUiAction) -> Unit
     ){
         btnToggleRun.setOnClickListener{
-            uiAction.invoke(TrackingUiAction.ToggleRunButtonClicked)
+//            uiAction.invoke(TrackingUiAction.ToggleRunButtonClicked)
+            toggleRun()
         }
     }
 
@@ -67,6 +139,13 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             it.action = action.name
             requireContext().startService(it)
         }
+    }
+
+    private fun toggleRun(){
+        if(isTracking)
+            sendCommandToService(TrackingServiceAction.PAUSE_SERVICE)
+        else
+            sendCommandToService(TrackingServiceAction.START_OR_RESUME_SERVICE)
     }
 
     override fun onStart() {
