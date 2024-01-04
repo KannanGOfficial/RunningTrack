@@ -1,5 +1,6 @@
 package com.kannan.runningtrack.core.presentation.tracking
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -151,6 +152,9 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     override fun onStart() {
         super.onStart()
         binding.mapView.onStart()
+        Intent(requireContext(), TrackingService::class.java).also { intent ->
+            requireContext().bindService(intent, viewModel.serviceConnection, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onResume() {
@@ -166,6 +170,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     override fun onStop() {
         super.onStop()
         binding.mapView.onStop()
+        requireContext().unbindService(viewModel.serviceConnection)
     }
 
     override fun onDestroy() {

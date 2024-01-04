@@ -2,18 +2,11 @@ package com.kannan.runningtrack.core.presentation.tracking
 
 import android.content.Intent
 import android.location.Location
-import android.os.Looper
+import android.os.Binder
+import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.Granularity
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
-import com.kannan.runningtrack.utils.extensions.checkHasLocationPermission
 import com.kannan.runningtrack.utils.location.LocationTracker
 import com.kannan.runningtrack.utils.location.LocationTrackerResult
 import com.kannan.runningtrack.utils.location.RunningTrackLocationTracker
@@ -23,9 +16,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 
 typealias PolyLine = MutableList<LatLng>
@@ -37,9 +27,30 @@ class TrackingService : LifecycleService() {
 
     private val tag = TrackingService::class.java.simpleName
 
-    private val locationTracker : LocationTracker by lazy { RunningTrackLocationTracker(this, ::locationTrackingResult) }
+    private val binder = TrackingServiceBinder()
+
+    private var locationTrackerResult : ((LocationTrackerResult) -> Unit) ? = null
+
+
+    private val locationTracker : LocationTracker by lazy { RunningTrackLocationTracker(this){
+        locationTrackerResult?.invoke(it)
+    } }
+
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
+        return binder
+    }
+    inner class TrackingServiceBinder : Binder(){
+        fun getBoundService() : TrackingService = this@TrackingService
+    }
+
+
+    fun setLocationTrackingResult(result: ((LocationTrackerResult) -> Unit)){
+        locationTrackerResult = result
+    }
 
     override fun onCreate() {
         super.onCreate()
