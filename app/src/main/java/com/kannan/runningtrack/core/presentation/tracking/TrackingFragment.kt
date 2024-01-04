@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolylineOptions
@@ -18,8 +20,14 @@ import com.kannan.runningtrack.utils.extensions.makeGone
 import com.kannan.runningtrack.utils.extensions.makeVisible
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -51,13 +59,14 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
         binding.bindState(
             uiEvent = viewModel.uiEvent,
-            uiAction = viewModel.accept
+            uiAction = viewModel.accept,
+            uiState = viewModel.uiState
         )
     }
 
     fun subscribeObservers(){
         TrackingService.isTracking.observe(viewLifecycleOwner){
-           updateTracking(it)
+//           updateTracking(it)
         }
 
         TrackingService.pathPoints.observe(viewLifecycleOwner){
@@ -114,7 +123,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     }
     private fun FragmentTrackingBinding.bindState(
         uiEvent : SharedFlow<TrackingUiEvent>,
-        uiAction : ((TrackingUiAction) -> Unit)
+        uiAction : ((TrackingUiAction) -> Unit),
+        uiState : StateFlow<TrackingUiState>,
     ){
         uiEvent.onEach { event ->
             when(event){
@@ -123,15 +133,56 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         }.flowWithLifecycle(viewLifecycleOwner.lifecycle)
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
+        bindToggleRun(
+            uiState
+        )
+
         bindClick(uiAction)
+    }
+
+    private fun FragmentTrackingBinding.bindToggleRun(
+        uiState: StateFlow<TrackingUiState>
+    ){
+        val trackingState = uiState.map { it.trackingState }.distinctUntilChanged()
+        val trackingButtonText = uiState.mapNotNull { it.toggleRunButtonText }.distinctUntilChanged()
+        val trackingServiceAction = uiState.map { it.trackingServiceAction }.distinctUntilChanged()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED){
+                launch {
+                    trackingState.collectLatest {trackingState ->
+                        when(trackingState){
+                            TrackingState.TRACKING -> {
+                                btnFinishRun.makeVisible()
+                            }
+                            TrackingState.NOT_TRACKING -> {
+                                btnFinishRun.makeGone()
+                            }
+                        }
+                    }
+                }
+
+                launch {
+                    trackingButtonText.collectLatest { text ->
+                        btnToggleRun.text = text.asString(requireContext())
+                    }
+                }
+
+                launch {
+                    trackingServiceAction.collectLatest { action ->
+                        sendCommandToService(action)
+                    }
+                }
+            }
+        }
     }
 
     private fun FragmentTrackingBinding.bindClick(
         uiAction: (TrackingUiAction) -> Unit
     ){
         btnToggleRun.setOnClickListener{
-//            uiAction.invoke(TrackingUiAction.ToggleRunButtonClicked)
-            toggleRun()
+            uiAction.invoke(TrackingUiAction.ToggleRunButtonClicked)
+//            toggleRun()
         }
     }
 
@@ -144,7 +195,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private fun toggleRun(){
         if(isTracking)
-            sendCommandToService(TrackingServiceAction.PAUSE_SERVICE)
+            sendCommandToService(TrackingServiceAction.PAUSE_SERVICE)Ui
         else
             sendCommandToService(TrackingServiceAction.START_OR_RESUME_SERVICE)
     }
