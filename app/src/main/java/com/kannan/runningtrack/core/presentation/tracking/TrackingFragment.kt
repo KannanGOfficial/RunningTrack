@@ -195,7 +195,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
 
     private fun toggleRun(){
         if(isTracking)
-            sendCommandToService(TrackingServiceAction.PAUSE_SERVICE)Ui
+            sendCommandToService(TrackingServiceAction.PAUSE_SERVICE)
         else
             sendCommandToService(TrackingServiceAction.START_OR_RESUME_SERVICE)
     }
