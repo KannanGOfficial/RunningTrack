@@ -108,13 +108,13 @@ class TrackingService : LifecycleService() {
 
     private fun updateLocationTracking(isTracking : Boolean){
         if(isTracking){
-//            locationTracker.startLocationTracking()
-            locationTracker.getLocationUpdates()
+            locationTracker.startLocationTracking()
+            /*locationTracker.getLocationUpdates()
                 .catch { e -> }
                 .onEach {location ->
                     addPolyLines(location)
                     Timber.tag(tag).d("updateLocationTracking inside Flow called...")
-                }.launchIn(serviceScope)
+                }.launchIn(serviceScope)*/
         }
     }
 
