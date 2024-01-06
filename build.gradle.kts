@@ -7,12 +7,9 @@ plugins {
 }
 
 buildscript {
-    val navVersion = "2.7.6"
-    val androidGradlePlugin = "8.1.1"
-
     dependencies {
-        classpath("androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion")
-        classpath("com.android.tools.build:gradle:$androidGradlePlugin")
-        classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+        classpath(libs.androidx.navigation.safe.args.gradle.plugin.classpath)
+        classpath(libs.gradle.classpath)
+        classpath(libs.secrets.gradle.plugin.classpath)
     }
 }
