@@ -1,9 +1,11 @@
 [versions]
-android-gradle ="8.1.1"
-kotlin ="1.9.0"
+android-gradle = "8.1.1"
+kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
 androidx-junit = "1.1.5"
 appcompat = "1.6.1"
+core-ktx = "1.9.0"
+marterial = "1.10.0"
 constraintlayout = "2.1.4"
 espresso-core = "3.5.1"
 junit = "4.13.2"
@@ -13,7 +15,7 @@ navigation = "2.7.6"
 room = "2.6.1"
 hilt-android = "2.47"
 hilt-compiler = "1.1.0"
-splash ="1.0.1"
+splash = "1.0.1"
 glide = "4.14.2"
 timber = "5.0.1"
 play-services-maps = "18.2.0"
@@ -24,6 +26,8 @@ mp-chart = "v3.1.0"
 [libraries]
 
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+andoirdx-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+material = { module = "com.google.android.material:material", version.ref = "marterial" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
 androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
@@ -40,13 +44,13 @@ navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ksp-complier = { module = "androidx.room:room-compiler", version.ref = "room" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt-android" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt-android" }
 hitl-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hilt-compiler" }
 
-splash = {module = "androidx.core:core-splashscreen",version.ref ="splash"}
+splash = { module = "androidx.core:core-splashscreen", version.ref = "splash" }
 
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 gilde-ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "glide" }
@@ -65,32 +69,25 @@ navigation-components = [
     "navigation-ui-ktx"
 ]
 
-room =[
-    "room-compiler",
+room = [
     "room-ktx",
     "room-paging",
     "room-runtime"
 ]
 
-dagger-hilt =[
-    "hilt-android",
+dagger-hilt-ksp = [
     "hilt-android-compiler",
     "hitl-compiler"
 ]
 
-glide =[
-    "glide",
-    "gilde-ksp"
-]
-
-google-maps-location-services =[
+google-maps-location-services = [
     "maps",
     "location"
 ]
 
 [plugins]
-android-gradle ={id ="com.android.application",version.ref ="android-gradle"}
-kotlin = {id ="org.jetbrains.kotlin.android",version.ref="kotlin"}
-ksp ={id = "com.google.devtools.ksp",version.ref = "ksp"}
-dagger-hilt = {id ="com.google.dagger.hilt.android",version.ref = "hilt-android"}
+#android-gradle ={id ="com.android.application",version.ref ="android-gradle"}
+#kotlin = {id ="org.jetbrains.kotlin.android",version.ref="kotlin"}
+#ksp ={id = "com.google.devtools.ksp",version.ref = "ksp"}
+#dagger-hilt = {id ="com.google.dagger.hilt.android",version.ref = "hilt-android"}
 

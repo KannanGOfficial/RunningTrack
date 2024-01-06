@@ -45,42 +45,25 @@ android {
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation(libs.androidx.appcompat)
-    implementation("com.google.android.material:material:1.10.0")
+    implementation(libs.andoirdx.ktx)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    //LifeCycle Service
     implementation(libs.androidx.lifecycle.service)
-
-    //Intuit
     implementation(libs.sdp.android)
-
-    //navigation
     implementation(libs.bundles.navigation.components)
-
-    //room
     implementation(libs.bundles.room)
-
-    //dagger - hilt
-    implementation(libs.bundles.dagger.hilt)
-
-    //splash screen
+    ksp(libs.room.ksp.complier)
+    implementation(libs.hilt.android)
+    ksp(libs.bundles.dagger.hilt.ksp)
     implementation(libs.splash)
-
-    //glide
-    implementation(libs.bundles.glide)
-
-    //Timber
+    implementation(libs.glide)
+    ksp(libs.gilde.ksp)
     implementation(libs.timber)
-
-    // Maps SDK for Android
     implementation(libs.bundles.google.maps.location.services)
-
-    //MP Chart
     implementation(libs.mpchart)
 
 }
