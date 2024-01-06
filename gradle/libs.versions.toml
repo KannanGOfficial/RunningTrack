@@ -17,6 +17,7 @@ room = "2.6.1"
 hilt-android = "2.47"
 hilt-compiler = "1.1.0"
 secretsGradlePlugin = "2.0.1"
+secretsGradlePluginApp = "v2.0.1"
 splash = "1.0.1"
 glide = "4.14.2"
 timber = "5.0.1"
@@ -91,8 +92,9 @@ google-maps-location-services = [
 ]
 
 [plugins]
-#android-gradle ={id ="com.android.application",version.ref ="android-gradle"}
-#kotlin = {id ="org.jetbrains.kotlin.android",version.ref="kotlin"}
-#ksp ={id = "com.google.devtools.ksp",version.ref = "ksp"}
-#dagger-hilt = {id ="com.google.dagger.hilt.android",version.ref = "hilt-android"}
+android-gradle = { id = "com.android.application", version.ref = "android-gradle" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+map-secrets-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePluginApp" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 

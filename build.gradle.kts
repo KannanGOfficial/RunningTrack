@@ -1,9 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+@file:Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application") version "8.1.1" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
-    id("com.google.devtools.ksp") version ("1.9.0-1.0.13") apply false
-    id("com.google.dagger.hilt.android") version "2.47" apply false
+    alias(libs.plugins.android.gradle) apply false
+    alias(libs.plugins.kotlin) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.dagger.hilt) apply false
 }
 
 buildscript {

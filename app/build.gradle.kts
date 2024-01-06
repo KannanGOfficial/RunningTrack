@@ -1,9 +1,9 @@
+@file:Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.android.gradle)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt)
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
