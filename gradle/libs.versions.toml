@@ -1,6 +1,5 @@
 [versions]
-android-gradle = "8.1.1"
-androidGradlePlugin = "8.1.1"
+androidGradle = "8.1.4"
 kotlin = "1.9.0"
 ksp = "1.9.0-1.0.13"
 androidx-junit = "1.1.5"
@@ -31,7 +30,7 @@ mp-chart = "v3.1.0"
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 andoirdx-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
 androidx-navigation-safe-args-gradle-plugin-classpath = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigation" }
-gradle-classpath = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+gradle-classpath = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
 material = { module = "com.google.android.material:material", version.ref = "marterial" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
@@ -92,7 +91,7 @@ google-maps-location-services = [
 ]
 
 [plugins]
-android-gradle = { id = "com.android.application", version.ref = "android-gradle" }
+android-gradle = { id = "com.android.application", version.ref = "androidGradle" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 map-secrets-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradlePluginApp" }
