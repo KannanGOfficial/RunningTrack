@@ -46,52 +46,41 @@ android {
 dependencies {
 
     implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation(libs.androidx.appcompat)
     implementation("com.google.android.material:material:1.10.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation(libs.androidx.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 
     //LifeCycle Service
-    implementation("androidx.lifecycle:lifecycle-service:2.6.2")
+    implementation(libs.androidx.lifecycle.service)
 
     //Intuit
-    implementation("com.intuit.sdp:sdp-android:1.1.0")
+    implementation(libs.sdp.android)
 
     //navigation
-    val navVersion = "2.7.6"
-    implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
-    implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+    implementation(libs.bundles.navigation.components)
 
     //room
-    val roomVersion = "2.6.1"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    implementation("androidx.room:room-paging:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.bundles.room)
 
     //dagger - hilt
-    implementation("com.google.dagger:hilt-android:2.47")
-    kapt("com.google.dagger:hilt-android-compiler:2.47")
-    kapt("androidx.hilt:hilt-compiler:1.1.0")
+    implementation(libs.bundles.dagger.hilt)
 
     //splash screen
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.splash)
 
     //glide
-    val glideVersion = "4.14.2"
-    implementation("com.github.bumptech.glide:glide:$glideVersion")
-    ksp("com.github.bumptech.glide:ksp:$glideVersion")
+    implementation(libs.bundles.glide)
 
     //Timber
-    implementation("com.jakewharton.timber:timber:5.0.1")
+    implementation(libs.timber)
 
     // Maps SDK for Android
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation(libs.bundles.google.maps.location.services)
 
     //MP Chart
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(libs.mpchart)
 
 }
