@@ -7,13 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kannan.runningtrack.R
 import com.kannan.runningtrack.core.domain.repository.RunRepository
-import com.kannan.runningtrack.utils.location.LocationTrackerResult
 import com.kannan.runningtrack.utils.uitext.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -48,12 +49,16 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
         override fun onServiceConnected(p0: ComponentName?, binder: IBinder?) {
             val trackingServiceBinder = binder as TrackingService.TrackingServiceBinder
             trackingServiceBinder.getBoundService()
-                .setLocationTrackingResult(::locationTrackerResult)
+                .polyLineFlow.onEach {
+                    Timber.tag(timberTag).d("!!!Locations are : ${it.longitude}, ${it.longitude}")
+                }.launchIn(viewModelScope)
+
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {}
     }
 
+/*
     private fun locationTrackerResult(locationTrackerResult: LocationTrackerResult) {
         when (locationTrackerResult) {
             is LocationTrackerResult.Error -> Timber.tag(timberTag).d(locationTrackerResult.error)
@@ -67,6 +72,7 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
             }
         }
     }
+*/
 
     private fun sendUiEvent(event: TrackingUiEvent) = viewModelScope.launch {
         _uiEvent.emit(event)
