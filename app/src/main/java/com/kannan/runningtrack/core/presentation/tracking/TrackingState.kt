@@ -1,8 +1,6 @@
 package com.kannan.runningtrack.core.presentation.tracking
 
-import android.graphics.Color
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
 import com.kannan.runningtrack.utils.uitext.UiText
 
 enum class TrackingServiceAction {

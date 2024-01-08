@@ -88,22 +88,6 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
         )
     }
 
-    /*
-        private fun locationTrackerResult(locationTrackerResult: LocationTrackerResult) {
-            when (locationTrackerResult) {
-                is LocationTrackerResult.Error -> Timber.tag(timberTag).d(locationTrackerResult.error)
-                is LocationTrackerResult.Success -> {
-                    if (TrackingService.isTracking.value!!) {
-                        for (location in locationTrackerResult.result.locations) {
-                            Timber.tag(timberTag)
-                                .d("New Location ${location.latitude} , ${location.longitude}")
-                        }
-                    }
-                }
-            }
-        }
-    */
-
     private fun sendUiEvent(event: TrackingUiEvent) = viewModelScope.launch {
         _uiEvent.emit(event)
     }
