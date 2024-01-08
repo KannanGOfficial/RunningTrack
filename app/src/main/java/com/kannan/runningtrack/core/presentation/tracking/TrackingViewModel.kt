@@ -5,6 +5,7 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.kannan.runningtrack.R
 import com.kannan.runningtrack.core.domain.repository.RunRepository
 import com.kannan.runningtrack.utils.uitext.UiText
@@ -51,6 +52,7 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
             trackingServiceBinder.getBoundService()
                 .polyLineFlow.onEach {
                     Timber.tag(timberTag).d("!!!Locations are : $it")
+                    updateCameraPositionLatLng(findTheLastLatLng(it))
                 }.launchIn(viewModelScope)
 
         }
@@ -58,51 +60,65 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
         override fun onServiceDisconnected(p0: ComponentName?) {}
     }
 
-/*
-    private fun locationTrackerResult(locationTrackerResult: LocationTrackerResult) {
-        when (locationTrackerResult) {
-            is LocationTrackerResult.Error -> Timber.tag(timberTag).d(locationTrackerResult.error)
-            is LocationTrackerResult.Success -> {
-                if (TrackingService.isTracking.value!!) {
-                    for (location in locationTrackerResult.result.locations) {
-                        Timber.tag(timberTag)
-                            .d("New Location ${location.latitude} , ${location.longitude}")
+    private fun findTheLastLatLng(polyLines: PolyLines) =
+        if (polyLines.isNotEmpty() && polyLines.last().isNotEmpty())
+            polyLines.last().last()
+        else
+            LatLng(0.0, 0.0)
+
+    private fun updateCameraPositionLatLng(latLng: LatLng) = _uiState.update {
+        it.copy(
+            cameraPosition = latLng
+        )
+    }
+
+    /*
+        private fun locationTrackerResult(locationTrackerResult: LocationTrackerResult) {
+            when (locationTrackerResult) {
+                is LocationTrackerResult.Error -> Timber.tag(timberTag).d(locationTrackerResult.error)
+                is LocationTrackerResult.Success -> {
+                    if (TrackingService.isTracking.value!!) {
+                        for (location in locationTrackerResult.result.locations) {
+                            Timber.tag(timberTag)
+                                .d("New Location ${location.latitude} , ${location.longitude}")
+                        }
                     }
                 }
             }
         }
-    }
-*/
+    */
 
     private fun sendUiEvent(event: TrackingUiEvent) = viewModelScope.launch {
         _uiEvent.emit(event)
     }
 
-    private fun updateTrackingUiState(trackingState : TrackingState) = _uiState.update {
+    private fun updateTrackingUiState(trackingState: TrackingState) = _uiState.update {
         it.copy(
             trackingState = trackingState
         )
     }
 
-    private fun updateToggleRunButtonText(text : UiText) = _uiState.update {
+    private fun updateToggleRunButtonText(text: UiText) = _uiState.update {
         it.copy(
             toggleRunButtonText = text
         )
     }
 
-    private fun updateTrackingServiceAction(trackingServiceAction: TrackingServiceAction) = _uiState.update {
-        it.copy(
-            trackingServiceAction = trackingServiceAction
-        )
-    }
+    private fun updateTrackingServiceAction(trackingServiceAction: TrackingServiceAction) =
+        _uiState.update {
+            it.copy(
+                trackingServiceAction = trackingServiceAction
+            )
+        }
 
-    private fun toggleRun(){
-        when(_uiState.value.trackingState){
+    private fun toggleRun() {
+        when (_uiState.value.trackingState) {
             TrackingState.TRACKING -> {
                 updateToggleRunButtonText(UiText.StringResource(R.string.start))
                 updateTrackingUiState(TrackingState.NOT_TRACKING)
                 updateTrackingServiceAction(TrackingServiceAction.PAUSE_SERVICE)
             }
+
             TrackingState.NOT_TRACKING -> {
                 updateToggleRunButtonText(UiText.StringResource(R.string.stop))
                 updateTrackingUiState(TrackingState.TRACKING)

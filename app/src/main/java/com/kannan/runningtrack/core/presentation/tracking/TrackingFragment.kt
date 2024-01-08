@@ -146,6 +146,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         val trackingState = uiState.map { it.trackingState }.distinctUntilChanged()
         val trackingButtonText = uiState.mapNotNull { it.toggleRunButtonText }.distinctUntilChanged()
         val trackingServiceAction = uiState.map { it.trackingServiceAction }.distinctUntilChanged()
+        val cameraPosition = uiState.map { it.cameraPosition }.distinctUntilChanged()
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){
@@ -171,6 +172,16 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
                 launch {
                     trackingServiceAction.collectLatest { action ->
                         sendCommandToService(action)
+                    }
+                }
+                launch {
+                    cameraPosition.collectLatest {latLng ->
+                        map?.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                latLng,
+                                15f
+                            )
+                        )
                     }
                 }
             }
