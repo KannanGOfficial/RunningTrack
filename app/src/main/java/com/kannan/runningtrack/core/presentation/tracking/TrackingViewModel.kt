@@ -50,7 +50,7 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
             val trackingServiceBinder = binder as TrackingService.TrackingServiceBinder
             trackingServiceBinder.getBoundService()
                 .polyLineFlow.onEach {
-                    Timber.tag(timberTag).d("!!!Locations are : ${it.longitude}, ${it.longitude}")
+                    Timber.tag(timberTag).d("!!!Locations are : $it")
                 }.launchIn(viewModelScope)
 
         }

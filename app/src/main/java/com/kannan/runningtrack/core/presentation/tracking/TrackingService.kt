@@ -17,8 +17,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 typealias PolyLine = MutableList<LatLng>
@@ -26,15 +32,16 @@ typealias PolyLines = MutableList<PolyLine>
 
 class TrackingService : LifecycleService() {
 
-    private var isFirstRun = true
-
     private val tag = TrackingService::class.java.simpleName
 
     private val binder = TrackingServiceBinder()
 
     private var locationTrackerResult: ((LocationTrackerResult) -> Unit)? = null
 
-    private val polyLineCalculator by lazy { PloyLineCalculator() }
+    private val polyLineCalculator by lazy { PloyLineCalculator(){
+    } }
+
+
 
     private val locationTracker: LocationTrackerFlow by lazy {
         RunningTrackLocationTracker(this) {
@@ -42,7 +49,32 @@ class TrackingService : LifecycleService() {
         }
     }
 
-    val polyLineFlow = polyLineCalculator.polyLineFlow
+
+    val polyLines : PolyLines = mutableListOf(mutableListOf())
+
+    val channels : Channel<PolyLine> = Channel()
+
+    val polyLineFlow : Flow<PolyLines> = channelFlow{
+
+        locationTracker.locationUpdatesFlow.onEach {
+            val latLng = LatLng(it.latitude,it.longitude)
+            polyLines.last().add(latLng)
+            Timber.tag(tag).d("Locatoin Flow is collected inside the PolyLine Flow")
+            launch {
+                send(polyLines)
+            }
+//            emit(polyLines)
+        }.launchIn(serviceScope)
+
+        channels.consumeEach {
+            polyLines.add(it)
+            launch {
+                send(polyLines)
+            }
+        }
+    }
+
+//    val polyLineFlow = polyLineCalculator.polyLineFlow
 
     val locationFlow = locationTracker.locationUpdatesFlow
 
@@ -69,11 +101,15 @@ class TrackingService : LifecycleService() {
                 }*/
 
         locationFlow
-            .onEach {
+            .flatMapLatest {
                 Timber.tag(tag)
                     .d("Location Updates are lat = ${it.latitude} long = ${it.longitude}")
-                polyLineCalculator.calculatePolyLine(it)
-            }.launchIn(serviceScope)
+                polyLineCalculator.calculateLocation(it)
+            }.onEach {
+
+            }
+
+
     }
 
     companion object {
@@ -134,6 +170,11 @@ class TrackingService : LifecycleService() {
     private fun startForegroundService() {
 //        addEmptyPolyLines()
 //        isTracking.postValue(true)
+
+        serviceScope.launch {
+//            polyLineCalculator.addEmptyPolyLine()
+            channels.send(mutableListOf())
+        }
         locationTracker.startLocationTracking()
         startForeground(
             trackingNotifier.notificationId,
