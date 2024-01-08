@@ -38,9 +38,6 @@ class TrackingService : LifecycleService() {
 
     private var locationTrackerResult: ((LocationTrackerResult) -> Unit)? = null
 
-    private val polyLineCalculator by lazy { PloyLineCalculator(){
-    } }
-
 
 
     private val locationTracker: LocationTrackerFlow by lazy {
@@ -50,9 +47,9 @@ class TrackingService : LifecycleService() {
     }
 
 
-    val polyLines : PolyLines = mutableListOf(mutableListOf())
+    private val polyLines : PolyLines = mutableListOf(mutableListOf())
 
-    val channels : Channel<PolyLine> = Channel()
+    private val channels : Channel<PolyLine> = Channel()
 
     val polyLineFlow : Flow<PolyLines> = channelFlow{
 
@@ -74,10 +71,6 @@ class TrackingService : LifecycleService() {
         }
     }
 
-//    val polyLineFlow = polyLineCalculator.polyLineFlow
-
-    val locationFlow = locationTracker.locationUpdatesFlow
-
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onBind(intent: Intent): IBinder {
@@ -89,65 +82,12 @@ class TrackingService : LifecycleService() {
         fun getBoundService(): TrackingService = this@TrackingService
     }
 
-    fun setLocationTrackingResult(result: ((LocationTrackerResult) -> Unit)) {
-        locationTrackerResult = result
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        /*        postInitialValues()
-                isTracking.observe(this){
-                    updateLocationTracking(it)
-                }*/
-
-        locationFlow
-            .flatMapLatest {
-                Timber.tag(tag)
-                    .d("Location Updates are lat = ${it.latitude} long = ${it.longitude}")
-                polyLineCalculator.calculateLocation(it)
-            }.onEach {
-
-            }
-
-
-    }
-
-    companion object {
-        val isTracking = MutableLiveData<Boolean>()
-        val pathPoints = MutableLiveData<PolyLines>()
-    }
-
-    private fun postInitialValues() {
-        isTracking.postValue(false)
-        pathPoints.postValue(mutableListOf())
-    }
-
-    private fun addEmptyPolyLines() = pathPoints.value?.let {
-        it.add(mutableListOf())
-        pathPoints.postValue(it)
-    } ?: pathPoints.postValue(mutableListOf(mutableListOf()))
-
-    private fun addPolyLines(location: Location) {
-        val latLng = LatLng(location.latitude, location.longitude)
-        pathPoints.value?.let {
-            it.last().add(latLng)
-            pathPoints.postValue(it)
-        }
-    }
-
     private val trackingNotifier: Notifier by lazy { TrackingNotifier(this) }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         intent?.let {
             when (it.action) {
                 TrackingServiceAction.START_OR_RESUME_SERVICE.name -> {
-                    /*if(isFirstRun){
-                        startForegroundService()
-                        isFirstRun = false
-                    }else {
-                        Timber.tag(tag).d("Service is Resumed...")
-                        startForegroundService()
-                    }*/
                     startForegroundService()
                 }
 
@@ -163,16 +103,11 @@ class TrackingService : LifecycleService() {
     }
 
     private fun pauseService() {
-//        isTracking.postValue(false)
         locationTracker.stopLocationTracking()
     }
 
     private fun startForegroundService() {
-//        addEmptyPolyLines()
-//        isTracking.postValue(true)
-
         serviceScope.launch {
-//            polyLineCalculator.addEmptyPolyLine()
             channels.send(mutableListOf())
         }
         locationTracker.startLocationTracking()
@@ -181,19 +116,6 @@ class TrackingService : LifecycleService() {
             trackingNotifier.notificationBuilder.build()
         )
     }
-
-    /*    private fun updateLocationTracking(isTracking : Boolean) : Flow<Location> = callbackFlow{
-            if(isTracking){
-                Timber.tag(tag).d("Location Tracking is started..")
-                locationTracker.startLocationTracking()
-                *//*locationTracker.getLocationUpdates()
-                .catch { e -> }
-                .onEach {location ->
-                    addPolyLines(location)
-                    Timber.tag(tag).d("updateLocationTracking inside Flow called...")
-                }.launchIn(serviceScope)*//*
-        }
-    }*/
 
     override fun onDestroy() {
         super.onDestroy()
