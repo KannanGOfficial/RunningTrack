@@ -1,9 +1,9 @@
 package com.kannan.runningtrack.core.presentation.tracking
 
+import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import androidx.lifecycle.LifecycleService
 import com.google.android.gms.maps.model.LatLng
 import com.kannan.runningtrack.utils.location.LocationTracker
 import com.kannan.runningtrack.utils.location.RunningTrackLocationTracker
@@ -25,7 +25,7 @@ import timber.log.Timber
 typealias PolyLine = MutableList<LatLng>
 typealias PolyLines = MutableList<PolyLine>
 
-class TrackingService : LifecycleService() {
+class TrackingService : Service() {
 
     private val tag = TrackingService::class.java.simpleName
 
@@ -63,7 +63,6 @@ class TrackingService : LifecycleService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onBind(intent: Intent): IBinder {
-        super.onBind(intent)
         return binder
     }
 

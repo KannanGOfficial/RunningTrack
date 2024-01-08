@@ -52,7 +52,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.androidx.lifecycle.service)
     implementation(libs.sdp.android)
     implementation(libs.bundles.navigation.components)
     implementation(libs.bundles.room)
