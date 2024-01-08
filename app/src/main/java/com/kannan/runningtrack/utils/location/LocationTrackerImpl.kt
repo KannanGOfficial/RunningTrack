@@ -15,69 +15,67 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 abstract class LocationTrackerImpl(
     private val context: Context,
-    private val locationHandlerResult: ((LocationTrackerResult) -> Unit)
-) : LocationCallback(), LocationTracker {
-
+) : LocationTracker {
 
     abstract val locationRequestBuilder: LocationRequest.Builder
+
+    abstract val timberTag: String
+
+    private lateinit var locationCallback: LocationCallback
 
     private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
         LocationServices.getFusedLocationProviderClient(context)
     }
 
     override fun startLocationTracking() {
-        try {
-            if (context.checkHasLocationPermission()) {
-                fusedLocationProviderClient.requestLocationUpdates(
-                    locationRequestBuilder.build(),
-                    this,
-                    Looper.getMainLooper()
-                )
-            } else {
-                locationHandlerResult.invoke(LocationTrackerResult.Error("Error :Location Permission is not Available"))
-            }
-        } catch (e: Exception) {
-            locationHandlerResult.invoke(LocationTrackerResult.Error("Error : $e"))
+
+        if (!context.checkHasLocationPermission()) {
+            Timber.tag(timberTag).d("Location Permission is Disabled..")
+            return
         }
+
+        if (!context.checkHasGPSEnabled()) {
+            Timber.tag(timberTag).d("GPS is Disabled...")
+            return
+        }
+
+        if (!context.checkHasNetworkEnabled()) {
+            Timber.tag(timberTag).d("Network Connection is Not Available...")
+        }
+
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequestBuilder.build(),
+            locationCallback,
+            Looper.getMainLooper()
+        )
+
+        Timber.tag(timberTag).d("Locations are Requested...")
+
     }
 
     override fun stopLocationTracking() {
-        try {
-            fusedLocationProviderClient.flushLocations()
-            fusedLocationProviderClient.removeLocationUpdates(this)
-        } catch (e: Exception) {
-            locationHandlerResult.invoke(LocationTrackerResult.Error("Error : $e"))
-        }
+        fusedLocationProviderClient.flushLocations()
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
-    override fun getLocationUpdates(): Flow<Location> = callbackFlow {
 
-        if (!context.checkHasLocationPermission())
-            throw LocationTracker.LocationException(LocationExceptionEnum.LOCATION_NOT_ENABLED.name)
+    override val locationUpdatesFlow: Flow<Location> = callbackFlow {
 
-        if (!context.checkHasGPSEnabled())
-            throw LocationTracker.LocationException(LocationExceptionEnum.GPS_NOT_ENABLED.name)
-
-        if (!context.checkHasNetworkEnabled())
-            throw LocationTracker.LocationException(LocationExceptionEnum.NETWORK_NOT_ENABLED.name)
-
-        val locationCallBack = object : LocationCallback(){
+        locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                locationResult.locations.lastOrNull()?.let {location ->
+                locationResult.locations.lastOrNull()?.let { location ->
+                    Timber.tag(timberTag).d("Location updates are...")
                     launch { send(location) }
                 }
             }
         }
 
-        fusedLocationProviderClient.requestLocationUpdates(locationRequestBuilder.build(), locationCallBack, Looper.getMainLooper())
-
-        awaitClose{ fusedLocationProviderClient.removeLocationUpdates(locationCallBack) }
-    }
-
-    override fun onLocationResult(result: LocationResult) {
-        locationHandlerResult.invoke(LocationTrackerResult.Success(result))
+        awaitClose {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+        }
     }
 }
