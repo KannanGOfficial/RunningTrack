@@ -53,6 +53,7 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
                 .polyLineFlow.onEach {
                     Timber.tag(timberTag).d("!!!Locations are : $it")
                     updateCameraPositionLatLng(findTheLastLatLng(it))
+                    updateLastAndPreLastLng(findLastAndPreLastLatLng(it))
                 }.launchIn(viewModelScope)
 
         }
@@ -64,11 +65,26 @@ class TrackingViewModel @Inject constructor(private val runRepository: RunReposi
         if (polyLines.isNotEmpty() && polyLines.last().isNotEmpty())
             polyLines.last().last()
         else
-            LatLng(0.0, 0.0)
+            null
 
-    private fun updateCameraPositionLatLng(latLng: LatLng) = _uiState.update {
+    private fun updateCameraPositionLatLng(latLng: LatLng?) = _uiState.update {
         it.copy(
             cameraPosition = latLng
+        )
+    }
+
+    private fun findLastAndPreLastLatLng(polyLines: PolyLines) =
+        if (polyLines.isNotEmpty() && polyLines.last().size > 1) {
+            val preLastLng = polyLines.last()[polyLines.last().size - 2]
+            val lastLng = polyLines.last().last()
+            LastAndPreLastLatLng(preLastLng, lastLng)
+        } else
+           null
+
+
+    private fun updateLastAndPreLastLng(lastAndPreLastLng: LastAndPreLastLatLng?) = _uiState.update {
+        it.copy(
+            lastAndPreLastLatLng = lastAndPreLastLng
         )
     }
 

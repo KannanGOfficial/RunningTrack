@@ -146,7 +146,8 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         val trackingState = uiState.map { it.trackingState }.distinctUntilChanged()
         val trackingButtonText = uiState.mapNotNull { it.toggleRunButtonText }.distinctUntilChanged()
         val trackingServiceAction = uiState.map { it.trackingServiceAction }.distinctUntilChanged()
-        val cameraPosition = uiState.map { it.cameraPosition }.distinctUntilChanged()
+        val cameraPosition = uiState.mapNotNull { it.cameraPosition }.distinctUntilChanged()
+        val lastAndPreLastLatLng = uiState.mapNotNull { it.lastAndPreLastLatLng }.distinctUntilChanged()
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED){
@@ -179,9 +180,19 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
                         map?.animateCamera(
                             CameraUpdateFactory.newLatLngZoom(
                                 latLng,
-                                15f
+                                100f
                             )
                         )
+                    }
+                }
+
+                launch {
+                    lastAndPreLastLatLng.collectLatest {
+                        val polyLineOptions = PolylineOptions()
+                            .color(Color.RED)
+                            .add(it.preLastLatLng)
+                            .add(it.lastLatLng)
+                        map?.addPolyline(polyLineOptions)
                     }
                 }
             }
